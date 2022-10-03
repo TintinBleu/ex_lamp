@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: projet
+  creationTimestamp: null
+  labels:
+    io.kompose.service: apache-claim0
+  name: apache-claim0
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+  selector:
+    matchLabels:
+      storage-tier: wordpress
+status: {}

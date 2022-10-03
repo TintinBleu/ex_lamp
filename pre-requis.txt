@@ -1,0 +1,21 @@
+
+C'est gitlab-runner qui va lancer les pipelines ci-cd sur ubuntu1 (le master). Il est d'uid 1001. Sur les machines qu'on va raccrocher au cluster comme ubuntu3, il existe un utilisateur ubuntu d'uid 1001 (qui ne sert à rien). On va donc automatiser sa  suppression pour recréer un utilisateur gitlab-runner (qui aura donc l'uid 1001). Mais il nous faut au préalable créer ce même utilisateur sur ubuntu2.
+
+- sudo useradd --comment 'GitLab Runner' --create-home gitlab-runner --shell /bin/bash
+
+Nous allons maintenant créer deux répertoires /home/gitlab-runner/www et /home/gitlab-runner/mysql sur ubuntu1 et un répertoire /home/gitlab-runner/www sur ubuntu2 pour pouvoir le monter en nfs.
+
+Sur ubuntu1:
+- sudo mkdir /home/gitlab-runner/www
+- sudo mkdir /home/gitlab-runner/mysql
+- sudo chown -R gitlab-runner:gitlab-runner /home/gitlab-runner/
+
+Sur ubuntu2:
+- sudo mkdir /home/gitlab-runner/www
+- sudo chown -R gitlab-runner:gitlab-runner /home/gitlab-runner/
+
+Nous pouvons maintenant créer le partage nfs...
+
+Nous allons devoir également, avec ansible, automatiser la création de ce répertoire www chez l'utilisateur gitlab-runner d'ubuntu3 ainsi que le montage nfs.
+
+

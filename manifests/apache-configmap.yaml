@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: projet
+  name: apache-php-config
+data:
+  php.memory_limit: 256M
+  php.post_max_size: 10M
+  php.upload_max_filesize: 10M

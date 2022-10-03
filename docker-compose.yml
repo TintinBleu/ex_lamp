@@ -1,0 +1,21 @@
+version: '3.3'
+
+services:
+  apache:
+    image: gitlab.jerome.lan:5005/jerome/lamp/php-apache
+    ports:
+      - 80:80
+    volumes:
+      - /home/formation/lamp/wordpress:/app
+
+  mariadb:
+    image: gitlab.jerome.lan:5005/jerome/lamp/mariadb
+    ports:
+      - 3306:3306
+    volumes:
+      - /home/formation/lamp/mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=secret

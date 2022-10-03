@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: projet
+  name: apache
+spec:
+  rules:
+    - host: wordpress.projet.jerome.lan
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: apache
+              port:
+                number: 80

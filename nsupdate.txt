@@ -1,0 +1,4 @@
+server ns.jerome.lan
+zone jerome.lan
+update add *.projet.jerome.lan. 604800 in cname ubuntu.jerome.lan.
+send

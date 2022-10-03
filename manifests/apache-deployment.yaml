@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: projet
+  annotations:
+    kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert -f ../docker-compose.yml
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: apache
+  name: apache
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: apache
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert -f ../docker-compose.yml
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: apache
+    spec:
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+      containers:
+      - image: gitlab.jerome.lan:5005/jerome/lamp/php-apache
+        imagePullPolicy: "Always"
+        name: apache
+        ports:
+        - containerPort: 80
+        - containerPort: 22
+        resources: {}
+        volumeMounts:
+        - mountPath: /app
+          name: apache-claim0
+        env:
+          - name: php.memory_limit
+            valueFrom:
+              configMapKeyRef:
+                name: apache-php-config
+                key: php.memory_limit
+          - name: php.post_max_size
+            valueFrom:
+              configMapKeyRef:
+                name: apache-php-config
+                key: php.post_max_size
+          - name: php.upload_max_size
+            valueFrom:
+              configMapKeyRef:
+                name: apache-php-config
+                key: php.upload_max_filesize
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+      - name: apache-claim0
+        persistentVolumeClaim:
+          claimName: apache-claim0
+status: {}
