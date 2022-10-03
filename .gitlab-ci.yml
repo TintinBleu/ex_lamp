@@ -1,0 +1,49 @@
+stages:
+  - build
+  - install
+  - deploy
+  - run
+
+#build-job:      
+#  stage: build
+#  before_script:
+#    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD gitlab.jerome.lan:5005
+#  script:
+#    - docker build -t $CI_REGISTRY/jerome/lamp/php-apache .
+#    - docker push $CI_REGISTRY/jerome/lamp/php-apache
+
+install-job:
+  stage: install
+  tags:
+    - ubuntu1
+  script:
+    - wget https://fr.wordpress.org/latest-fr_FR.tar.gz
+    - tar -xzf latest-fr_FR.tar.gz -C ~
+    - rm latest-fr_FR.tar.gz
+    - rm -rf ~/www/$PROJET
+    - mv ~/wordpress ~/www/$PROJET
+    - cp ~/www/$PROJET/wp-config-sample.php ~/www/$PROJET/wp-config.php
+    - sed -i 's/votre_nom_de_bdd/wordpress/' ~/www/$PROJET/wp-config.php
+    - sed -i 's/votre_utilisateur_de_bdd/wordpress/' ~/www/$PROJET/wp-config.php
+    - sed -i 's/votre_mdp_de_bdd/secret/' ~/www/$PROJET/wp-config.php
+    - sed -i 's/localhost/mariadb/' ~/www/$PROJET/wp-config.php
+
+deploy-job:
+  stage: deploy
+  tags:
+    - ubuntu1
+  before_script:
+    - sed -i "s/projet/$PROJET/g" manifests/*
+    - sed -i "/port/s/222/$SSH_PORT/" manifests/ssh-service.yaml
+  script:
+    - microk8s.kubectl apply -f manifests/projet-namespace.yaml
+    - microk8s.kubectl apply -f manifests/
+
+run-job:
+  stage: run
+  tags: 
+    - ubuntu1
+  before_script:
+    - sed -i "s/projet/$PROJET/g" nsupdate.txt
+  script:
+    - nsupdate nsupdate.txt
